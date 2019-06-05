@@ -9,9 +9,13 @@
     >
 
     <SeekBar
+        android:layout_marginTop="400dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="50dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -19,24 +23,31 @@
         android:orientation="horizontal"
         >
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PLAY"
-            android:id="@+id/play"
-            />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/pause"
+            android:layout_marginLeft="80dp"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/pause"
             android:text="PAUSE"
             />
+        <ImageButton
+            android:layout_marginRight="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PLAY"
+            android:src="@drawable/play"
+            android:id="@+id/play"
+            />
 
-        <Button
+        <ImageButton
+            android:layout_marginRight="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/reset"
+            android:src="@drawable/reset"
             android:text="RESET"
             />
 

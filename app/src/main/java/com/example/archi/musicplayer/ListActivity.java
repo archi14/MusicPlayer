@@ -41,7 +41,7 @@ public class ListActivity extends AppCompatActivity {
                     String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                     String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                     String Duration = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                    Log.d("TAG", display_name+"id is"+String.valueOf(song_id)+"path is "+fullpath+Duration);
+                    //Log.d("TAG", display_name+"id is"+String.valueOf(song_id)+"path is "+fullpath+Duration);
                     MusicFiles musicFile = new MusicFiles(display_name,fullpath,artist,album,song_id,Duration);
                     files.add(musicFile);
                 }while (cursor.moveToNext());

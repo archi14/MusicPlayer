@@ -1,11 +1,14 @@
 package com.example.archi.musicplayer;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,10 +31,20 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.RecyclerView
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int i) {
-        MusicFiles file = musicFiles.get(i);
+        final MusicFiles file = musicFiles.get(i);
         holder.name.setText(file.getDisplay_name());
         holder.artist.setText(file.getArtist());
         holder.album.setText(file.getAlbum());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context,MainActivity.class);
+                intent.putExtra("file",file.getPath());
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("type","adapter");
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
