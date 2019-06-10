@@ -1,20 +1,24 @@
 package com.example.archi.musicplayer;
 
-public class MusicFiles {
-    String display_name;
-    String path;
-    String artist;
-    String album;
-    int id;
-    String duration;
+import android.net.Uri;
 
-    public MusicFiles(String display_name, String path, String artist, String album, int id, String duration) {
+public class MusicFiles {
+    private String display_name;
+    private String path;
+    private String artist;
+    private String album;
+    private int id;
+    private String duration;
+    private Uri Albumart;
+
+    public MusicFiles(String display_name, String path, String artist, String album, int id, String duration, Uri albumart) {
         this.display_name = display_name;
         this.path = path;
         this.artist = artist;
         this.album = album;
         this.id = id;
         this.duration = duration;
+        Albumart = albumart;
     }
 
     public String getDisplay_name() {
@@ -63,5 +67,13 @@ public class MusicFiles {
 
     public void setDuration(String duration) {
         this.duration = duration;
+    }
+
+    public Uri getAlbumart() {
+        return Albumart;
+    }
+
+    public void setAlbumart(Uri albumart) {
+        Albumart = albumart;
     }
 }

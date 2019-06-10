@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -31,9 +34,16 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.RecyclerView
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int i) {
         final MusicFiles file = musicFiles.get(i);
-        holder.name.setText(file.getDisplay_name());
+        String name = file.getDisplay_name();
+        if(name.lastIndexOf(".")>0)
+        {
+            name = name.substring(0,name.lastIndexOf("."));
+        }
+        holder.name.setText(name);
         holder.artist.setText(file.getArtist());
         holder.album.setText(file.getAlbum());
+        Glide.with(context).asBitmap().load(file.getAlbumart()).placeholder(R.drawable.placeholder).into(holder.albumart);
+        //holder.albumart.setText(file.getAlbumart());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,11 +64,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.RecyclerView
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
         TextView name,artist,album;
-        public RecyclerViewHolder(@NonNull View itemView) {
+        ImageView albumart;
+         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
             artist = itemView.findViewById(R.id.artist);
             album = itemView.findViewById(R.id.album);
+            albumart = itemView.findViewById(R.id.albumart);
         }
     }
 }

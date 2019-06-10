@@ -25,13 +25,13 @@ import java.io.IOException;
  * A simple {@link Fragment} subclass.
  */
 public class PlayerFragment extends Fragment {
-    ImageButton play,pause,reset;
-    Button btn;
-    SeekBar seekBar;
-    MediaPlayer mediaPlayer;
-    String path;
-    int duration;
-    Handler handler;
+    private ImageButton play,pause,reset;
+    private Button btn;
+    private SeekBar seekBar;
+    private MediaPlayer mediaPlayer;
+    private String path;
+    private int duration;
+    private Handler handler;
 
 
     public PlayerFragment() {
@@ -55,13 +55,13 @@ public class PlayerFragment extends Fragment {
         reset = view.findViewById(R.id.reset);
         seekBar  = view.findViewById(R.id.seekBar);
         handler = new Handler();
-        btn.setOnClickListener(new View.OnClickListener() {
+       /* btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(),ListActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
 
         Intent intent= getActivity().getIntent();
         if(intent!=null)
@@ -174,7 +174,7 @@ public class PlayerFragment extends Fragment {
         {
             mediaPlayer =  MediaPlayer.create(getContext(),R.raw.b);
             duration = mediaPlayer.getDuration();
-            Log.d("TAG", String.valueOf(duration));;
+            Log.d("TAG", String.valueOf(duration));
             seekBar.setMax(duration);
             Log.d("TAG", String.valueOf(seekBar.getMax()));
 
@@ -190,7 +190,7 @@ public class PlayerFragment extends Fragment {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     duration = mediaPlayer.getDuration();
-                    Log.d("TAG", String.valueOf(duration));;
+                    Log.d("TAG", String.valueOf(duration));
                     seekBar.setMax(duration);
                     Log.d("TAG", String.valueOf(seekBar.getMax()));
                     playMusic();

@@ -1,7 +1,10 @@
 package com.example.archi.musicplayer;
 
 
+import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -27,10 +30,10 @@ import java.util.ArrayList;
  */
 public class ListFragment extends Fragment {
 
-    Button btn;
-    ArrayList<MusicFiles> files;
-    FilesAdapter adapter;
-    RecyclerView recyclerView;
+    private Button btn;
+    private ArrayList<MusicFiles> files;
+    private FilesAdapter adapter;
+    private RecyclerView recyclerView;
     public ListFragment() {
         // Required empty public constructor
     }
@@ -50,7 +53,7 @@ public class ListFragment extends Fragment {
         btn = view.findViewById(R.id.btn);
         recyclerView = view.findViewById(R.id.recyclerView);
         files = new ArrayList<>() ;
-        String[] columns = {MediaStore.Audio.Media.DATA,MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION};
+        String[] columns = {MediaStore.Audio.Media.DATA,MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,MediaStore.Audio.Media.DURATION,MediaStore.Audio.Media.ALBUM_ID};
         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,columns,null,null,null,null);
         if(cursor!=null)
         {
@@ -63,27 +66,38 @@ public class ListFragment extends Fragment {
                     String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                     String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                     String Duration = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-                    //Log.d("TAG", display_name+"id is"+String.valueOf(song_id)+"path is "+fullpath+Duration);
-                    MusicFiles musicFile = new MusicFiles(display_name,fullpath,artist,album,song_id,Duration);
+                    Long albumid = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+
+                    Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+                    Uri albumartUri = ContentUris.withAppendedId(sArtworkUri,albumid);
+
+                    MusicFiles musicFile = new MusicFiles(display_name,fullpath,artist,album,song_id,Duration,albumartUri);
                     files.add(musicFile);
                 }while (cursor.moveToNext());
             }
         }
         cursor.close();
+
         adapter = new FilesAdapter(getContext(),files);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
         Log.d("TAG", String.valueOf(files.size()));
 
-        /*btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                Intent intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN,Intent.CATEGORY_APP_BROWSER);
-                //intent.setType("video/*");
-                startActivityForResult(intent,1);
+    }
+
+    private String getCoverPath(Context context, String albumart) {
+        String path = null;
+        Cursor c = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,new String[]{MediaStore.Audio.Albums.ALBUM_ART},MediaStore.Audio.Albums._ID+"=?",new String[]{String.valueOf(albumart)},null);
+        if(c!=null)
+        {
+            if(c.moveToFirst())
+            {
+                path = c.getString(0);
             }
-        });*/
+            c.close();
+        }
+        return path;
     }
 }
