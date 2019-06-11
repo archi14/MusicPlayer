@@ -8,7 +8,11 @@
         android:id="@+id/playerFragment3"
         android:name="com.example.archi.musicplayer.PlayerFragment"
         android:label="fragment_player"
-        tools:layout="@layout/fragment_player" />
+        tools:layout="@layout/fragment_player" >
+        <argument
+            android:name="MusicFile"
+            android:defaultValue="null" />
+    </fragment>
     <fragment
         android:id="@+id/listFragment"
         android:name="com.example.archi.musicplayer.ListFragment"

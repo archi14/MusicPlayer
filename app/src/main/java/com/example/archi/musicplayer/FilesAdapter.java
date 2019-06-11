@@ -1,7 +1,9 @@
 package com.example.archi.musicplayer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,9 +21,10 @@ import java.util.ArrayList;
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.RecyclerViewHolder> {
     Context context;
     ArrayList<MusicFiles> musicFiles;
-
-    FilesAdapter(Context context,ArrayList<MusicFiles> musicFiles)
+    Activity activity;
+    FilesAdapter(Activity activity,Context context,ArrayList<MusicFiles> musicFiles)
     {
+        this.activity = activity;
         this.context = context;
         this.musicFiles = musicFiles;
     }
@@ -43,15 +47,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.RecyclerView
         holder.artist.setText(file.getArtist());
         holder.album.setText(file.getAlbum());
         Glide.with(context).asBitmap().load(file.getAlbumart()).placeholder(R.drawable.placeholder).into(holder.albumart);
-        //holder.albumart.setText(file.getAlbumart());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context,MainActivity.class);
-                intent.putExtra("file",file.getPath());
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("type","adapter");
-                context.startActivity(intent);
+                Bundle bundle =  new Bundle();
+                bundle.putString("filepath",file.getPath());
+                bundle.putString("albumart",file.getAlbumart().toString());
+                Navigation.findNavController(activity,R.id.nav_host_fragment).navigate(R.id.playerFragment3,bundle);
             }
         });
     }

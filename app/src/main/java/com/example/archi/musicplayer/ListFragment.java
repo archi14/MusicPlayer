@@ -51,6 +51,7 @@ public class ListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         btn = view.findViewById(R.id.btn);
+
         recyclerView = view.findViewById(R.id.recyclerView);
         files = new ArrayList<>() ;
         String[] columns = {MediaStore.Audio.Media.DATA,MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,MediaStore.Audio.Media.DURATION,MediaStore.Audio.Media.ALBUM_ID};
@@ -77,8 +78,7 @@ public class ListFragment extends Fragment {
             }
         }
         cursor.close();
-
-        adapter = new FilesAdapter(getContext(),files);
+        adapter = new FilesAdapter(this.getActivity(),getContext(),files);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 

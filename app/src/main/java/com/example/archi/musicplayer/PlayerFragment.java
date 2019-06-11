@@ -1,8 +1,9 @@
 package com.example.archi.musicplayer;
 
 
-import android.content.Intent;
+
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import java.io.IOException;
 public class PlayerFragment extends Fragment {
     private ImageButton play,pause,reset;
     private Button btn;
+    Uri albumart;
     private SeekBar seekBar;
     private MediaPlayer mediaPlayer;
     private String path;
@@ -47,6 +49,18 @@ public class PlayerFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        path = getArguments().getString("filepath");
+        albumart = Uri.parse(getArguments().getString("albumart"));
+        try {
+            InitializePlayertrying(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         play = view.findViewById(R.id.play);
@@ -63,27 +77,15 @@ public class PlayerFragment extends Fragment {
             }
         });*/
 
-        Intent intent= getActivity().getIntent();
-        if(intent!=null)
-        {
-            Log.d("TAG", intent.toString());
-            //Log.d("TAG", intent.getStringExtra("type"));
-            path = intent.getStringExtra("file");
-            if(path!=null)
-            {
-                Log.d("TAG", path);
-                try {
-                    InitializePlayertrying(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Log.d("TAG", "here");
-                //playMusic();
-            }
 
+/*
+        try {
+            Log.d("inhere", path);
+            InitializePlayertrying(path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        InitializePlayer();
+*/
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -210,4 +212,5 @@ public class PlayerFragment extends Fragment {
         super.onStop();
         mediaPlayer.release();
     }
+
 }
