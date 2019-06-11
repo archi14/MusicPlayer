@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.io.IOException;
 public class PlayerFragment extends Fragment {
     private ImageButton play,pause,reset;
     private Button btn;
+    ImageView album;
     Uri albumart;
     private SeekBar seekBar;
     private MediaPlayer mediaPlayer;
@@ -64,8 +66,9 @@ public class PlayerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         play = view.findViewById(R.id.play);
-        btn = view.findViewById(R.id.btn);
+        //btn = view.findViewById(R.id.btn);
         pause = view.findViewById(R.id.pause);
+        album = view.findViewById(R.id.albumart);
         reset = view.findViewById(R.id.reset);
         seekBar  = view.findViewById(R.id.seekBar);
         handler = new Handler();
@@ -185,6 +188,7 @@ public class PlayerFragment extends Fragment {
     private void InitializePlayertrying(String path) throws IOException {
         if(mediaPlayer==null)
         {
+            album.setImageURI(albumart);
             mediaPlayer =  new MediaPlayer();
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepareAsync();

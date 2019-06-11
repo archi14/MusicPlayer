@@ -7,9 +7,18 @@
     android:orientation="vertical"
     >
 
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp"
+        android:id="@+id/albumart"
+
+        />
+
     <!-- TODO: Update blank fragment layout -->
     <SeekBar
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
@@ -18,45 +27,48 @@
         android:layout_height="50dp" />
 
     <LinearLayout
+        android:layout_marginTop="30dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginBottom="20dp"
         >
 
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginRight="20dp"
             android:id="@+id/pause"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="20dp"
-            android:src="@drawable/pause"
+            android:src="@drawable/ic_pause_black_24dp"
             android:text="PAUSE"
+            android:background="#000"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             />
-        <ImageButton
-            android:layout_marginRight="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:text="PLAY"
+            android:background="#000"
+            android:layout_marginRight="20dp"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:src="@drawable/play"
             android:id="@+id/play"
             />
 
-        <ImageButton
-            android:layout_marginRight="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <androidx.appcompat.widget.AppCompatImageButton
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:id="@+id/reset"
-            android:src="@drawable/reset"
+            android:background="#000"
+            android:src="@drawable/ic_restore_black_24dp"
             android:text="RESET"
             />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn"
-            android:text="GO"
-            />
+
     </LinearLayout>
     </LinearLayout>
 
