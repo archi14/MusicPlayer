@@ -8,26 +8,12 @@
         android:id="@+id/playerFragment3"
         android:name="com.example.archi.musicplayer.PlayerFragment"
         android:label="fragment_player"
-        tools:layout="@layout/fragment_player" >
-        <argument
-            android:name="MusicFile"
-            android:defaultValue="null" />
-    </fragment>
+        tools:layout="@layout/fragment_player" />
     <fragment
         android:id="@+id/listFragment"
         android:name="com.example.archi.musicplayer.ListFragment"
         android:label="fragment_list"
-        tools:layout="@layout/fragment_list" >
-        <action
-            android:id="@+id/action_listFragment_to_playerFragment32"
-            app:destination="@id/playerFragment3" />
-        <action
-            android:id="@+id/action_listFragment_to_libraryFragment"
-            app:destination="@id/libraryFragment" />
-        <action
-            android:id="@+id/action_listFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/libraryFragment"
         android:name="com.example.archi.musicplayer.LibraryFragment"
