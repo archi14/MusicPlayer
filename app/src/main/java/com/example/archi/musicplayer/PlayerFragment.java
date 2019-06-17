@@ -2,6 +2,12 @@ package com.example.archi.musicplayer;
 
 
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,8 +15,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,16 +40,65 @@ public class PlayerFragment extends Fragment {
     ImageView album;
     Uri albumart;
     private SeekBar seekBar;
-    private MediaPlayer mediaPlayer;
     private String path;
     private int duration;
+    private  int currentPos;
+    PlayerService playerService;
+    private boolean mBound = false;
     private Handler handler;
-
-
+    Intent intent;
     public PlayerFragment() {
         // Required empty public constructor
     }
 
+    private ServiceConnection connect = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            PlayerService.LocalBinder binder = (PlayerService.LocalBinder) service;
+            playerService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+                mBound =false;
+          }
+    };
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("hello", "onStart: ");
+        intent = new Intent(getContext(),PlayerService.class);
+        intent.putExtra("path",path);
+        getContext().bindService(intent,connect, Context.BIND_AUTO_CREATE);
+        final Handler musicHandler = new Handler();
+        Runnable musicRun = new Runnable() {
+            @Override
+            public void run() {
+                if(mBound==true)
+                {
+                    if(duration==0)
+                    {
+                        duration = playerService.getDuration();
+                        seekBar.setMax(duration);
+                    }
+                    Log.d("here", String.valueOf(playerService.getCurrentPos()));
+                    currentPos = playerService.getCurrentPos();
+                    seekBar.setProgress(currentPos);
+
+                }
+               if(currentPos<duration)
+               {
+                   musicHandler.postDelayed(this,1000);
+               }else
+               {
+                   musicHandler.removeMessages(0);
+               }
+            }
+        };
+        musicHandler.postDelayed(musicRun,1000);
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,13 +110,11 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d("hello", "onActivityCreated: ");
         path = getArguments().getString("filepath");
         albumart = Uri.parse(getArguments().getString("albumart"));
-        try {
-            InitializePlayertrying(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        album.setImageURI(albumart);
+
     }
 
     @Override
@@ -72,6 +127,7 @@ public class PlayerFragment extends Fragment {
         reset = view.findViewById(R.id.reset);
         seekBar  = view.findViewById(R.id.seekBar);
         handler = new Handler();
+        //album.setImageURI(albumart);
        /* btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,9 +149,9 @@ public class PlayerFragment extends Fragment {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(mediaPlayer!=null && fromUser)
+                if(playerService.checkPlayer() && fromUser)
                 {
-                    mediaPlayer.seekTo(progress);
+                    playerService.seekBarChange(progress);
                 }
 
             }
@@ -113,21 +169,43 @@ public class PlayerFragment extends Fragment {
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pauseMusic();
+                playerService.pauseMusic();
             }
         });
 
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playMusic();
+                //Intent intent = new Intent(getContext(),PlayerService.class);
+                //getContext().startService(intent);
+                    seekBar.setMax(playerService.duration);
+                    playerService.playMusic();
+                /*new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while(playerService.getCurrentPos()<playerService.duration)
+                        {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    seekBar.setProgress(playerService.getCurrentPos());
+                                }
+                            }) ;
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();*/
             }
         });
 
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer!=null)
+                /*if(mediaPlayer!=null)
                 {
                     mediaPlayer.reset();
                     seekBar.setProgress(0);
@@ -138,83 +216,44 @@ public class PlayerFragment extends Fragment {
                     }
                     Log.d("TAG", String.valueOf(mediaPlayer));
                     //InitializePlayer();
+                }*/
+                if(playerService.reset())
+                {
+                    seekBar.setProgress(0);
+                    try {
+                        playerService.InitializePlayertrying(path);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+
             }
         });
 
     }
-    private void pauseMusic() {
-        mediaPlayer.pause();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //LocalBroadcastManager.getInstance(getContext()).registerReceiver(messageReciever,new IntentFilter("updating seekbar"));
     }
 
-    private void playMusic() {
-        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
-            Log.d("TAG", "onClick: ");
-            mediaPlayer.start();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(mediaPlayer.getCurrentPosition()<duration)
-                    {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                seekBar.setProgress(mediaPlayer.getCurrentPosition());
-                            }
-                        }) ;
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
-        }
-    }
-
-
-    private void InitializePlayer() {
-        if(mediaPlayer==null)
-        {
-            mediaPlayer =  MediaPlayer.create(getContext(),R.raw.b);
-            duration = mediaPlayer.getDuration();
-            Log.d("TAG", String.valueOf(duration));
-            seekBar.setMax(duration);
-            Log.d("TAG", String.valueOf(seekBar.getMax()));
+/*
+    private BroadcastReceiver messageReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int progress = intent.getIntExtra("progress",0);
+            Log.d("hereactivity", String.valueOf(progress));
+            seekBar.setProgress(progress);
 
         }
-    }
-    private void InitializePlayertrying(String path) throws IOException {
-        if(mediaPlayer==null)
-        {
-            album.setImageURI(albumart);
-            mediaPlayer =  new MediaPlayer();
-            mediaPlayer.setDataSource(path);
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    duration = mediaPlayer.getDuration();
-                    Log.d("TAG", String.valueOf(duration));
-                    seekBar.setMax(duration);
-                    Log.d("TAG", String.valueOf(seekBar.getMax()));
-                    playMusic();
-                }
-            });
-
-
-        }else
-        {
-            mediaPlayer.setDataSource(path);
-            mediaPlayer.prepare();
-        }
-    }
+    };
+*/
 
     @Override
     public void onStop() {
         super.onStop();
-        mediaPlayer.release();
+        //mediaPlayer.release();
     }
 
 }
