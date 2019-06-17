@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModel;
+
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -52,6 +52,7 @@ public class PlayerFragment extends Fragment {
     private Handler handler;
     Intent intent;
     PlayerViewModel model;
+    private boolean songChanged;
     public PlayerFragment() {
         // Required empty public constructor
     }
@@ -72,15 +73,34 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("hello", "onStart: ");
+        //Log.d("hello", "onStart: ");
         intent = new Intent(getContext(),PlayerService.class);
-        if(path!=null)
+        if(model.path!=null)
         {
-            intent.putExtra("path",path);
+            intent.putExtra("path",model.path);
 
         }
+
         getContext().bindService(intent,connect, Context.BIND_AUTO_CREATE);
+
         final Handler musicHandler = new Handler();
+        musicHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(songChanged==true && mBound == true)
+                {
+                    Log.d("hello", "onStart: ");
+                    try {
+                        playerService.reset();
+                        playerService.InitializePlayertrying(model.path);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    seekBar.setMax(playerService.getDuration());
+                }
+
+            }
+        },100);
         Runnable musicRun = new Runnable() {
             @Override
             public void run() {
@@ -129,9 +149,22 @@ public class PlayerFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         model = ViewModelProviders.of(getActivity()).get(PlayerViewModel.class);
-         model.path= getArguments().getString("filepath");
-        if(model.path!=null)
+
+        if(getArguments()!=null && model.path!=null)
         {
+            model.path =getArguments().getString("filepath");
+            model.albumart = Uri.parse(getArguments().getString("albumart"));
+            album.setImageURI(model.albumart);
+            seekBar.setProgress(0);
+            songChanged =true;
+            Log.d("hello", "onActivityCreated: ");
+        }else
+        {
+            songChanged = false;
+        }
+        if(model.path==null)
+        {
+            model.path= getArguments().getString("filepath");
             model.albumart = Uri.parse(getArguments().getString("albumart"));
             album.setImageURI(model.albumart);
         }
@@ -200,7 +233,7 @@ public class PlayerFragment extends Fragment {
                 {
                     seekBar.setProgress(0);
                     try {
-                        playerService.InitializePlayertrying(path);
+                        playerService.InitializePlayertrying(model.path);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -228,12 +261,12 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d("hello", "onDestroyView: ");
+        //Log.d("hello", "onDestroyView: ");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("hello", "onDestroy: ");
+        //Log.d("hello", "onDestroy: ");
     }
 }
